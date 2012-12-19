@@ -6,8 +6,10 @@ class Tree {
 }
 
 class Node{
-    Path[] froms
-    Path[] tos
+    int id;
+    Boolean root=false;
+    Path[] froms=[]
+    Path[] tos=[]
 }
 class Path{
     Node from
@@ -15,7 +17,9 @@ class Path{
     RuleChain ruleChain
 }
 class RuleChain{
-    Rule[] rules
+    int id
+    String name
+    Rule[] rules = []
 
     def permissionPolicy
 }
@@ -23,6 +27,5 @@ class RuleChain{
 class Rule{
     String name
     String content
-    Map fixedParams
+    //Map fixedParams
 }
-

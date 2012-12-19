@@ -1,18 +1,51 @@
 package product.tree
 
-def builder = new NodeBuilder()
-def tree = builder.tree (name:'test tree'){
-    root{
-        froms:null
-        tos:Path{
-            from:root
-            to:null
-            ruleChain{
-                rules:{
-                    rule(name:'test rule',content:'return true',fixedParame:null);
-                }
-            }
-        }
-    }
-}
-println tree
+
+String testXml = 
+"""<tree name='test'>
+    <node id='1' root='true'/>
+    <node id='2'/>
+    <node id='3'/>
+    <path type='purchaseOption'>
+        <from id='1'/>
+        <to id='2'/>
+        <chain id='1' name="test chain1">
+            <rule id='1' name='test rule1'>
+                return true
+            </rule>
+            <rule id='2' name='test rule2'>
+                return true
+            </rule>
+        </chain>
+    </path>
+    <path type='purchaseOption'>
+        <from id='2'/>
+        <to id='3'/>
+        <chain id='2' name="test chain2">
+            <rule id='1' name='test rule1'>
+                return true
+            </rule>
+            <rule id='3' name='test rule3'>
+                return true
+            </rule>
+        </chain>
+    </path>
+    <path type='autoProvision'>
+        <from id='1'/>
+        <to id='3'/>
+        <chain id='3' name="test chain3">
+            <rule id='2' name='test rule2'>
+                return true
+            </rule>
+            <rule id='3' name='test rule3'>
+                return true
+            </rule>
+        </chain>
+    </path>
+</tree>
+"""
+
+def node = TreeBuilder.getXmlDoc(testXml)
+//print node.path[0].chain[0].rule[0].text();
+def tree = TreeBuilder.generateTree(node)
+println tree 
