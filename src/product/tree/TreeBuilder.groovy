@@ -1,17 +1,15 @@
 package product.tree;
 
 
-public class TreeBuilder {
-    static groovy.util.Node getXmlDoc(String xml){
-        return  new XmlParser().parseText(xml);
-    }
-    
-    static Tree generateTree(groovy.util.Node xmlTree){
-        Tree tree= new Tree();
+public class TreeBuilder{
+    def Tree generateTree(xml){
+		
+        Tree tree= new Tree()
         def nodes=[] 
-        
-        xmlTree.node.each {nodes+=convertNode(it)}
-        
+		
+   		def xmlTree =  new XmlParser().parseText(xml);
+		xmlTree.node.each {nodes+=convertNode(it)}
+		
         assamblePath(nodes, xmlTree.path)
         
         def candidates = nodes.findAll{it.root.is(true)}
@@ -19,18 +17,17 @@ public class TreeBuilder {
             throw new IllegalArgumentException("None or more than one root node found. Initialize Tree Builder failed.")
         }
         tree.root=candidates[0];
-        
         return tree
     }
     
-    private static Node convertNode(groovy.util.Node xmlNode){
+    def Node convertNode(groovy.util.Node xmlNode){
         product.tree.Node node = new  product.tree.Node()
         node.id = xmlNode.@id
         node.root=xmlNode.@root
         return node
     }
     
-    private static assamblePath(nodes, xmlPaths){
+   def assamblePath(nodes, xmlPaths){
         xmlPaths.each {xmlPath->
             Path path = new Path();
             
@@ -44,20 +41,22 @@ public class TreeBuilder {
         }
     }
     
-    private static convertRuleChain(xmlChain){
+    def convertRuleChain(xmlChain){
         RuleChain chain = new RuleChain()
         chain.id=xmlChain.@id[0]
         chain.name=xmlChain.@name[0]
         
         chain.rules = convertRules(xmlChain.rule)
         
-        def  checkRules = Closure checkRules() {
-            it.every {evaluate(it.content)}
-        }
-        chain.permissionPolicy = checkRules(chain.rules);
-        
+		
+        chain.permissionPolicy = {rules->
+			rules.every {evaluate(it.content)}
+		}
+		
+		return chain
     }
-    private static convertRules(xmlChain){
+	
+    def convertRules(xmlChain){
         def rules = []
        xmlChain.rule.each{
            Rule rule = new Rule()
@@ -67,6 +66,6 @@ public class TreeBuilder {
        }
        return rules
     }
-    
 }
+
 
