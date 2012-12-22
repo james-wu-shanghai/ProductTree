@@ -2,8 +2,13 @@ package product.tree;
 
 
 public class TreeBuilder{
+	def RuleChainRepository ruleChainRepository
+	
+	def TreeBuilder(RuleChainRepository ruleChainRepository){
+		this.ruleChainRepository = ruleChainRepository
+	}
+	
     def Tree generateTree(xml){
-		
         Tree tree= new Tree()
         def nodes = [] 
 		
@@ -39,44 +44,10 @@ public class TreeBuilder{
             path.to = nodes.find{it.id+"" == xmlPath.to.@id[0]}
             path.to.froms += path
 
-            path.ruleChain = convertRuleChain(xmlPath.chain)
+            path.ruleChain = ruleChainRepository.getRuleChain(xmlPath.chain.@name) 
         }
     }
     
-    def convertRuleChain(xmlChain){
-        RuleChain chain = new RuleChain()
-        chain.id = xmlChain.@id[0]
-        chain.name = xmlChain.@name[0]
-        
-        chain.rules = convertRules(xmlChain.rule)
-        
-		
-        chain.permissionPolicy = {rules, binding->
-			rules.every{
-				try{
-					it.script.binding=binding
-					it.script.run()
-				}catch(Exception e){
-					false
-				}
-			}
-		}
-		
-		return chain
-    }
-	
-    def convertRules(xmlRules){
-		def shell = new GroovyShell()
-		def rules = []
-		xmlRules.each{
-			Rule rule = new Rule()
-			rule.content = it.@name[0]
-			rule.content = it.text()
-			rule.script  = shell.parse(rule.content)
-			rules += rule
-       }
-       return rules
-    }
 }
 
 
