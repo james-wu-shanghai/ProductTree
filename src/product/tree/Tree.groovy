@@ -28,5 +28,5 @@ class RuleChain{
 class Rule{
     String name
     String content
-    //Map fixedParams
+	def script
 }
