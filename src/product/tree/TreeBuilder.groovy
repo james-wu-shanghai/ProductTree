@@ -22,7 +22,7 @@ public class TreeBuilder{
     
     def Node convertNode(groovy.util.Node xmlNode){
         product.tree.Node node = new  product.tree.Node()
-        node.id = xmlNode.@id
+        node.id = xmlNode.@id.toInteger()
         node.root=xmlNode.@root
         return node
     }
@@ -30,13 +30,16 @@ public class TreeBuilder{
    def assamblePath(nodes, xmlPaths){
         xmlPaths.each {xmlPath->
             Path path = new Path();
-            
-            path.from = nodes.findAll{it.id+"" == xmlPath.from.@id[0]}
-            path.from.tos += path
 
-            path.to = nodes.findAll{it.id+"" == xmlPath.to.@id[0]}
+			path.type=xmlPath.@type
+						
+            path.from = nodes.find{it.id + ""== xmlPath.from.@id[0]}
+            path.from.tos += path
+			
+            path.to = nodes.find{it.id+"" == xmlPath.to.@id[0]}
             path.to.froms += path
-            
+
+			
             path.ruleChain = convertRuleChain(xmlPath.chain)
         }
     }
@@ -49,8 +52,8 @@ public class TreeBuilder{
         chain.rules = convertRules(xmlChain.rule)
         
 		
-        chain.permissionPolicy = {rules->
-			rules.every {evaluate(it.content)}
+        chain.permissionPolicy = {
+			 chain.rules.every {evaluate(it.content)}
 		}
 		
 		return chain

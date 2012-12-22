@@ -45,7 +45,6 @@ String testXml =
 </tree>
 """
 
-def node = TreeBuilder.getXmlDoc(testXml)
-//print node.path[0].chain[0].rule[0].text();
-def tree = TreeBuilder.generateTree(node)
-println tree 
+def tree = new TreeBuilder().generateTree(testXml)
+assert null != tree
+assert [2,3] == new TreeIterator().collectNodes(tree, 'purchaseOption').id

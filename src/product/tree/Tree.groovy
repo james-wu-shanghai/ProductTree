@@ -14,6 +14,7 @@ class Node{
 class Path{
     Node from
     Node to
+	String type
     RuleChain ruleChain
 }
 class RuleChain{
