@@ -25,14 +25,14 @@ public class TreeBuilder{
         return tree
     }
     
-    def Node convertNode(groovy.util.Node xmlNode){
+    def private convertNode(groovy.util.Node xmlNode){
         product.tree.Node node = new  product.tree.Node()
         node.id = xmlNode.@id.toInteger()
         node.root = xmlNode.@root
         return node
     }
     
-   def assamblePath(nodes, xmlPaths){
+   def private assamblePath(nodes, xmlPaths){
         xmlPaths.each {xmlPath->
             Path path = new Path();
 
@@ -47,7 +47,6 @@ public class TreeBuilder{
             path.ruleChain = ruleChainRepository.getRuleChain(xmlPath.chain.@name) 
         }
     }
-    
 }
 
 

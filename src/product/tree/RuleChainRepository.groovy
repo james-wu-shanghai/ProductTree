@@ -1,7 +1,6 @@
 package product.tree
 
 class RuleChainRepository {
-	//TODO: this can be a map
 	def chainsMap = [:]
 	def shell = new GroovyShell()
 	
@@ -19,7 +18,7 @@ class RuleChainRepository {
 		chainsMap[name] 
 	}
 	
-	def convertRuleChain(xmlChain, ruleRep){
+	def private convertRuleChain(xmlChain, ruleRep){
 		RuleChain chain = new RuleChain()
 		chain.id = xmlChain.@id
 		chain.name = xmlChain.@name
@@ -41,7 +40,7 @@ class RuleChainRepository {
 		return chain
 	}
 	
-	def convertRules(xmlRule, ruleRep){
+	def private convertRules(xmlRule, ruleRep){
 		def ruleInRep = ruleRep.find{xmlRule.@name == it.@name}
 		Rule rule = new Rule()
 		rule.name = ruleInRep.@name
