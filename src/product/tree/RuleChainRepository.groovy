@@ -2,31 +2,41 @@ package product.tree
 
 class RuleChainRepository {
 	def chainsMap = [:]
+	def ruleMap=[:]
 	def shell = new GroovyShell()
-	
+
 	def RuleChainRepository(String xmlChains, String xmlRules){
 		def chainRep = new XmlParser().parseText(xmlChains);
-		def ruleRep = new XmlParser().parseText(xmlRules); 
-		
+		def ruleRep = new XmlParser().parseText(xmlRules);
+
+
+		ruleRep.each{
+			Rule rule = new Rule()
+			rule.name = it.@name
+			rule.content = it.text()
+			rule.script  = shell.parse(rule.content)
+			ruleMap[rule.name]=rule
+		}
+
 		chainRep.each {
-			def chain =  convertRuleChain(it, ruleRep)
+			def chain =  convertRuleChain(it)
 			chainsMap[chain.name] = chain
 		}
 	}
-	
+
 	def getRuleChain(String name){
-		chainsMap[name] 
+		chainsMap[name]
 	}
-	
-	def private convertRuleChain(xmlChain, ruleRep){
+
+	def private convertRuleChain(xmlChain){
 		RuleChain chain = new RuleChain()
 		chain.id = xmlChain.@id
 		chain.name = xmlChain.@name
-		
+
 		xmlChain.rule.each {
-			chain.rules += convertRules(it, ruleRep)
-		} 
-		
+			chain.rules += ruleMap[it.@name]
+		}
+
 		chain.permissionPolicy = {rules, binding->
 			rules.every{
 				try{
@@ -39,14 +49,4 @@ class RuleChainRepository {
 		}
 		return chain
 	}
-	
-	def private convertRules(xmlRule, ruleRep){
-		def ruleInRep = ruleRep.find{xmlRule.@name == it.@name}
-		Rule rule = new Rule()
-		rule.name = ruleInRep.@name
-		rule.content = ruleInRep.text()
-		rule.script  = shell.parse(rule.content)
-	   return rule
-	}
 }
-
