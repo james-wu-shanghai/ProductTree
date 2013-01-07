@@ -1,9 +1,10 @@
 package product.tree;
 
+import groovy.transform.CompileStatic;
 
 public class TreeBuilder{
 	def RuleChainRepository ruleChainRepository
-	
+        
 	def TreeBuilder(RuleChainRepository ruleChainRepository){
 		this.ruleChainRepository = ruleChainRepository
 	}
@@ -13,6 +14,7 @@ public class TreeBuilder{
         def nodes = [] 
 		
    		def xmlTree =  new XmlParser().parseText(xml);
+        tree.name = xmlTree.@name
 		xmlTree.node.each {nodes += convertNode(it)}
 		
         assamblePath(nodes, xmlTree.path)
@@ -26,10 +28,20 @@ public class TreeBuilder{
     }
     
     def private convertNode(groovy.util.Node xmlNode){
-        product.tree.Node node = new  product.tree.Node()
+        product.tree.Node node = new product.tree.Node()
         node.id = xmlNode.@id.toInteger()
+        if(xmlNode.offer.size() > 0){
+            node.nodeOffer = convertOffer(xmlNode.offer[0])
+        }
         node.root = xmlNode.@root
         return node
+    }
+    
+    def private convertOffer(xmlOffer){
+         NodeOffer offer = new NodeOffer()
+         offer.code=xmlOffer.@code
+         offer.type=xmlOffer.@type
+         return offer   
     }
     
    def private assamblePath(nodes, xmlPaths){
@@ -48,5 +60,3 @@ public class TreeBuilder{
         }
     }
 }
-
-
